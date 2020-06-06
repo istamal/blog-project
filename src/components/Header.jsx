@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import * as actions from '../actions/index';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   isAuth: state.isAuth,
 });
 
@@ -15,10 +15,10 @@ const actionCreators = {
   deleteArticle: actions.deleteArticle,
 };
 
-const Header = props => {
+const Header = (props) => {
   const handleAuth = () => {
-    const { setAuth } = props;
-    setAuth();
+    const { setAuth, isAuth } = props;
+    setAuth(isAuth);
     localStorage.clear();
   };
 

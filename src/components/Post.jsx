@@ -15,7 +15,7 @@ const actionCreaters = {
   setPostChangeStatusToNone: actions.setPostChangeStatusToNone,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   article: state.article,
   slug: state.slug,
   changePostStatus: state.changePostStatus,
@@ -24,8 +24,9 @@ const mapStateToProps = state => ({
 
 class Post extends React.Component {
   componentDidMount = () => {
-    const { getTargetArticle } = this.props;
-    return getTargetArticle(window.location.pathname);
+    console.log(window.location.pathname);
+    const { getTargetArticle, slug } = this.props;
+    return getTargetArticle(`/articles/${slug}`);
   };
 
   handleLIke = () => {
@@ -34,7 +35,9 @@ class Post extends React.Component {
   };
 
   render() {
-    const { article, changePostStatus, setPostChangeStatusToNone, slug, deletePost } = this.props;
+    const {
+      article, changePostStatus, setPostChangeStatusToNone, slug, deletePost,
+    } = this.props;
 
     if (changePostStatus === 'success') {
       return (
@@ -62,7 +65,7 @@ class Post extends React.Component {
             <p>{article.body}</p>
             <div className="links">
               {article.tagList.length
-                ? article.tagList.map(tag => <Tag color="orangered">{tag}</Tag>)
+                ? article.tagList.map((tag) => <Tag color="orangered">{tag}</Tag>)
                 : null}
               {article.favorited ? (
                 <HeartFilled style={{ color: 'red' }} onClick={this.handleLIke} className="like" />

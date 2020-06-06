@@ -1,6 +1,17 @@
 import axios from 'axios';
 
-export const setSlug = slug => ({
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.common.Authorization = `Token ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
+
+export const setSlug = (slug) => ({
   type: 'SET_SLUG',
   payload: {
     slug,
@@ -19,14 +30,14 @@ export const requestFailure = () => ({
   type: 'REQUEST_FAILURE',
 });
 
-export const setArticles = articles => ({
+export const setArticles = (articles) => ({
   type: 'SET_ARTICLES',
   payload: {
     articles,
   },
 });
 
-export const setArticle = article => ({
+export const setArticle = (article) => ({
   type: 'SET_ARTICLE',
   payload: {
     article,
@@ -37,7 +48,7 @@ export const deleteArticle = () => ({
   type: 'DELETE_ARTICLE',
 });
 
-export const getArticles = () => async dispatch => {
+export const getArticles = () => async (dispatch) => {
   dispatch(requestSend());
   try {
     const response = await axios.get('https://conduit.productionready.io/api/articles?limit=10');
@@ -48,21 +59,21 @@ export const getArticles = () => async dispatch => {
   }
 };
 
-export const setLike = liked => ({
+export const setLike = (liked) => ({
   type: 'SET_LIKE',
   payload: {
     liked,
   },
 });
 
-export const addErrorMsg = err => ({
+export const addErrorMsg = (err) => ({
   type: 'ADD_ERROR_MESSAGE',
   payload: {
     err,
   },
 });
 
-export const getPageArticles = page => async dispatch => {
+export const getPageArticles = (page) => async (dispatch) => {
   dispatch(requestSend());
   try {
     const offsetVal = (page - 1) * 10;
@@ -76,7 +87,7 @@ export const getPageArticles = page => async dispatch => {
   }
 };
 
-export const getTargetArticle = endpoint => async dispatch => {
+export const getTargetArticle = (endpoint) => async (dispatch) => {
   dispatch(requestSend());
   try {
     const response = await axios.get(`https://conduit.productionready.io/api${endpoint}`);
@@ -87,18 +98,21 @@ export const getTargetArticle = endpoint => async dispatch => {
   }
 };
 
-export const setAuth = () => ({
+export const setAuth = (auth) => ({
   type: 'SET_AUTH',
+  payload: {
+    auth,
+  },
 });
 
-export const authenticate = (values, path) => async dispatch => {
+export const authenticate = (values, path) => async (dispatch) => {
   dispatch(requestSend());
   try {
     const response = await axios.post(path, { user: values });
     localStorage.setItem('user', response.data.user.username);
     localStorage.setItem('token', response.data.user.token);
     dispatch(requestSuccess());
-    await dispatch(setAuth());
+    await dispatch(setAuth(false));
   } catch (error) {
     dispatch(requestFailure());
     dispatch(addErrorMsg(error.response.data.errors));
@@ -121,17 +135,15 @@ export const setPostChangeStatusToNone = () => ({
   type: 'SET_POSTCHANGE_STATUS_TO_NONE',
 });
 
-export const addPost = values => async dispatch => {
+export const addPost = (values) => async (dispatch) => {
   dispatch(postChangeRequest());
   try {
-    const token = localStorage.getItem('token');
     const options = {
-      headers: { Authorization: `Token ${token}` },
       method: 'Post',
       data: { article: values },
       url: 'https://conduit.productionready.io/api/articles',
     };
-    axios(options).then(response => {
+    axios(options).then((response) => {
       if (response.status === 200) {
         return dispatch(postChangeSuccess());
       }
@@ -142,16 +154,14 @@ export const addPost = values => async dispatch => {
   }
 };
 
-export const deletePost = slug => async dispatch => {
+export const deletePost = (slug) => async (dispatch) => {
   dispatch(postChangeRequest());
   try {
-    const token = localStorage.getItem('token');
     const options = {
-      headers: { Authorization: `Token ${token}` },
       method: 'Delete',
       url: `https://conduit.productionready.io/api/articles/${slug}`,
     };
-    axios(options).then(response => {
+    axios(options).then((response) => {
       if (response.status === 200) {
         return dispatch(postChangeSuccess());
       }
@@ -162,14 +172,14 @@ export const deletePost = slug => async dispatch => {
   }
 };
 
-export const addUserName = username => ({
+export const addUserName = (username) => ({
   type: 'ADD_USERNAME',
   payload: {
     name: username,
   },
 });
 
-export const addUser = (values, path) => async dispatch => {
+export const addUser = (values, path) => async (dispatch) => {
   dispatch(requestSend());
   try {
     const response = await axios.post(path, { user: values });

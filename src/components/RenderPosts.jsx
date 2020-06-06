@@ -9,7 +9,7 @@ import shortid from 'shortid';
 import PropTypes from 'prop-types';
 import * as actions from '../actions/index';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   articles: state.articles,
   slug: state.slug,
 });
@@ -27,7 +27,7 @@ class RenderPosts extends React.Component {
     getArticles();
   };
 
-  handleLIke = evt => {
+  handleLIke = (evt) => {
     const { setLike } = this.props;
     const { target } = evt;
     setLike(target.parentNode.parentNode.parentNode.parentNode.firstChild.textContent);
@@ -38,7 +38,7 @@ class RenderPosts extends React.Component {
     return (
       <main className="container padding-top margin-bottom">
         {articles[0] ? (
-          articles.map(item => (
+          articles.map((item) => (
             <div key={shortid.generate()} className="post-card">
               <img className="avatar" alt="AVATAR" src={`${item.author.image}`} />
               <div className="card__content">
@@ -58,11 +58,11 @@ class RenderPosts extends React.Component {
                 <p>{item.body}</p>
                 <div className="links">
                   {item.tagList.length
-                    ? item.tagList.map(tag => (
-                        <Tag key={shortid.generate()} color="orangered">
-                          {tag}
-                        </Tag>
-                      ))
+                    ? item.tagList.map((tag) => (
+                      <Tag key={shortid.generate()} color="orangered">
+                        {tag}
+                      </Tag>
+                    ))
                     : null}
                   {item.favorited ? (
                     <HeartFilled style={{ color: 'red' }} onClick={this.handleLIke} />

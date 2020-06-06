@@ -2,7 +2,7 @@
 import React from 'react';
 import { Input, Button, Spin } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, BrowserRouter as Router } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -13,12 +13,12 @@ const actionCreators = {
   authenticate: actions.authenticate,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   errorMsg: state.errorMsg,
   requestStatus: state.requestStatus,
 });
 
-const Login = props => {
+const Login = (props) => {
   const loginValidation = Yup.object().shape({
     email: Yup.string()
       .email('Укожите корректный email')
@@ -36,15 +36,15 @@ const Login = props => {
       password: '',
     },
     validationSchema: loginValidation,
-    onSubmit: values => {
-      const { authenticate, history } = props;
-      authenticate(values, 'https://conduit.productionready.io/api/users/login').then(() =>
-        history.replace('/'),
-      );
+    onSubmit: (values) => {
+      const { authenticate } = props;
+      authenticate(values, 'https://conduit.productionready.io/api/users/login');
     },
   });
 
-  const { errors, values, touched, handleBlur, handleChange, handleSubmit } = formik;
+  const {
+    errors, values, touched, handleBlur, handleChange, handleSubmit,
+  } = formik;
 
   const { errorMsg, requestStatus } = props;
 
@@ -89,10 +89,14 @@ const Login = props => {
 
 Login.propTypes = {
   authenticate: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired,
-  emailOrPassword: PropTypes.string.isRequired,
+  emailOrPassword: PropTypes.string,
   requestStatus: PropTypes.string.isRequired,
-  errorMsg: PropTypes.object.isRequired,
+  errorMsg: PropTypes.object,
+};
+
+Login.defaultProps = {
+  errorMsg: null,
+  emailOrPassword: '',
 };
 
 export default connect(mapStateToProps, actionCreators)(Login);

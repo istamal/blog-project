@@ -48,7 +48,7 @@ const changePostStatus = (state = 'none', action) => {
 
 const isAuth = (state = false, action) => {
   if (action.type === 'SET_AUTH') {
-    return !state;
+    return !action.payload.auth;
   }
   return state;
 };
@@ -58,7 +58,7 @@ const articles = (state = [], action) => {
     return action.payload.articles;
   }
   if (action.type === 'SET_LIKE') {
-    return state.map(item => {
+    return state.map((item) => {
       if (item.slug === action.payload.liked) {
         return { ...item, favorited: !item.favorited };
       }
