@@ -2,7 +2,7 @@
 import React from 'react';
 import { Input, Button, Spin } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { Link, BrowserRouter as Router } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';

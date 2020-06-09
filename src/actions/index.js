@@ -59,6 +59,24 @@ export const getArticles = () => async (dispatch) => {
   }
 };
 
+export const setFilteredArticles = (tag) => ({
+  type: 'SET_FILTERED_ARTICLES',
+  payload: {
+    tag,
+  },
+});
+
+export const filterByTag = (tag) => async (dispatch) => {
+  dispatch(requestSend());
+  try {
+    const response = await axios.get(`https://conduit.productionready.io/api/articles?limit=10&tag=${tag}`);
+    dispatch(setArticles(response.data.articles));
+    dispatch(requestSuccess());
+  } catch (err) {
+    dispatch(requestFailure());
+  }
+};
+
 export const setLike = (liked) => ({
   type: 'SET_LIKE',
   payload: {
@@ -104,6 +122,21 @@ export const setAuth = (auth) => ({
     auth,
   },
 });
+
+export const authenticateWithToken = () => async (dispatch) => {
+  dispatch(requestSend());
+  try {
+    const response = await axios.get('https://conduit.productionready.io/api/user');
+    localStorage.setItem('token', response.data.user.token);
+    dispatch(requestSuccess());
+    dispatch(setAuth(false));
+  } catch (error) {
+    localStorage.clear();
+    dispatch(setAuth(true));
+    dispatch(requestFailure());
+    throw error;
+  }
+};
 
 export const authenticate = (values, path) => async (dispatch) => {
   dispatch(requestSend());
@@ -154,6 +187,25 @@ export const addPost = (values) => async (dispatch) => {
   }
 };
 
+export const editPost = (values, slug) => async (dispatch) => {
+  dispatch(postChangeRequest());
+  try {
+    const options = {
+      method: 'Put',
+      data: { article: values },
+      url: `https://conduit.productionready.io/api/articles/${slug}`,
+    };
+    axios(options).then((response) => {
+      if (response.status === 200) {
+        return dispatch(postChangeSuccess());
+      }
+      return dispatch(postChangeFailure());
+    });
+  } catch (err) {
+    dispatch(postChangeFailure());
+  }
+};
+
 export const deletePost = (slug) => async (dispatch) => {
   dispatch(postChangeRequest());
   try {
@@ -190,5 +242,55 @@ export const addUser = (values, path) => async (dispatch) => {
   } catch (error) {
     dispatch(addErrorMsg(error.response.data.errors));
     dispatch(requestFailure());
+  }
+};
+
+export const setFavorited = (article) => ({
+  type: 'SET_FAVORITED',
+  payload: {
+    article,
+  },
+});
+
+export const deleteFavorited = (article) => ({
+  type: 'DELETE_FAVORITED',
+  payload: {
+    article,
+  },
+});
+
+export const requestFavorite = () => ({
+  type: 'FAVORITE_REQUESTED',
+});
+
+export const favoriteSuccess = () => ({
+  type: 'FAVORITE_SUCCESS',
+});
+
+export const favoriteFailure = () => ({
+  type: 'FAVORITE_FAILURE',
+});
+
+export const fatchFavorite = (slug) => async (dispatch) => {
+  dispatch(requestFavorite());
+  try {
+    const response = await axios.post(`https://conduit.productionready.io/api/articles/${slug}/favorite`);
+    dispatch(setFavorited(response.data.article));
+    dispatch(favoriteSuccess());
+  } catch (err) {
+    console.log(err);
+    dispatch(favoriteFailure());
+  }
+};
+
+export const unFavorite = (slug) => async (dispatch) => {
+  dispatch(requestFavorite());
+  try {
+    const response = await axios.delete(`https://conduit.productionready.io/api/articles/${slug}/favorite`);
+    dispatch(deleteFavorited(response.data.article));
+    dispatch(favoriteSuccess());
+  } catch (err) {
+    console.log(err);
+    dispatch(favoriteFailure());
   }
 };

@@ -20,6 +20,9 @@ const article = (state = null, action) => {
   if (action.type === 'DELETE_ARTICLE') {
     return null;
   }
+  if (action.type === 'SET_FAVORITED' || action.type === 'DELETE_FAVORITED') {
+    return action.payload.article;
+  }
   return state;
 };
 
@@ -53,17 +56,33 @@ const isAuth = (state = false, action) => {
   return state;
 };
 
+const favoriteRequestsStatus = (state = 'none', action) => {
+  if (action.type === 'FAVORITE_REQUESTED') {
+    return 'requested';
+  }
+  if (action.type === 'FAVORITE_SUCCESS') {
+    return 'success';
+  }
+  if (action.type === 'FAVORITE_FAILURE') {
+    return 'failure';
+  }
+  return state;
+};
+
 const articles = (state = [], action) => {
   if (action.type === 'SET_ARTICLES') {
     return action.payload.articles;
   }
-  if (action.type === 'SET_LIKE') {
+  if (action.type === 'SET_FAVORITED' || action.type === 'DELETE_FAVORITED') {
     return state.map((item) => {
-      if (item.slug === action.payload.liked) {
-        return { ...item, favorited: !item.favorited };
+      if (item.slug === action.payload.article.slug) {
+        return action.payload.article;
       }
       return item;
     });
+  }
+  if (action.type === 'SET_FILTERED_ARTICLES') {
+    return state.filter((item) => item.tagList.includes(action.payload.tag));
   }
   return state;
 };
@@ -85,6 +104,7 @@ export default combineReducers({
   requestStatus,
   articles,
   article,
+  favoriteRequestsStatus,
   errorMsg,
   isAuth,
   slug,

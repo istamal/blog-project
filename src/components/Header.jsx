@@ -12,39 +12,35 @@ const mapStateToProps = (state) => ({
 
 const actionCreators = {
   setAuth: actions.setAuth,
-  deleteArticle: actions.deleteArticle,
 };
 
-const Header = (props) => {
+const Header = ({ setAuth, isAuth }) => {
   const handleAuth = () => {
-    const { setAuth, isAuth } = props;
     setAuth(isAuth);
     localStorage.clear();
   };
 
-  const { deleteArticle } = props;
-
   return (
     <header>
       <div className="header__wrapper container">
-        <Link onClick={() => deleteArticle()} to="/">
+        <Link to="/">
           <h1 className="logo">Blog</h1>
         </Link>
         <div className="user">
-          {localStorage.getItem('user') && (
+          {isAuth && (
             <Link className="user-btn margin-right" to="/add">
               Добавить пост
             </Link>
           )}
           <div className="user-name">
             <Avatar icon={<UserOutlined />} />
-            {localStorage.getItem('user') ? (
+            {isAuth ? (
               <span className="user-nick">{localStorage.getItem('user')}</span>
             ) : (
               <span className="user-nick">Вы не авторизованы</span>
             )}
           </div>
-          {localStorage.getItem('user') ? (
+          {isAuth ? (
             <Link onClick={handleAuth} className="user-btn" to="/">
               Выйти
             </Link>
@@ -61,11 +57,7 @@ const Header = (props) => {
 
 Header.propTypes = {
   setAuth: PropTypes.func.isRequired,
-  deleteArticle: PropTypes.func,
-};
-
-Header.defaultProps = {
-  deleteArticle: null,
+  isAuth: PropTypes.bool.isRequired,
 };
 
 export default connect(mapStateToProps, actionCreators)(Header);

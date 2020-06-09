@@ -9,26 +9,24 @@ const actionCreators = {
   addUser: actions.addUser,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   errorMsg: state.errorMsg,
   requestStatus: state.requestStatus,
 });
 
-const Signup = props => {
+const Signup = ({ errorMsg, requestStatus, addUser }) => {
   const formik = useFormik({
     initialValues: {
       username: '',
       email: '',
       password: '',
     },
-    onSubmit: values => {
-      props.addUser(values, 'https://conduit.productionready.io/api/users');
+    onSubmit: (values) => {
+      addUser(values, 'https://conduit.productionready.io/api/users');
     },
   });
 
   const { values, handleChange, handleSubmit } = formik;
-
-  const { errorMsg, requestStatus } = props;
 
   const renderForm = () => (
     <form className="form" onSubmit={handleSubmit}>

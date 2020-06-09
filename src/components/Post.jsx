@@ -7,11 +7,13 @@ import { Tag, Spin, Button } from 'antd';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import * as actions from '../actions/index';
+import AnimatedHeart from './AnimatedHeart';
 
 const actionCreaters = {
   getTargetArticle: actions.getTargetArticle,
-  setLike: actions.setLike,
   deletePost: actions.deletePost,
+  unFavorite: actions.unFavorite,
+  fatchFavorite: actions.fatchFavorite,
   setPostChangeStatusToNone: actions.setPostChangeStatusToNone,
 };
 
@@ -24,19 +26,19 @@ const mapStateToProps = (state) => ({
 
 class Post extends React.Component {
   componentDidMount = () => {
-    console.log(window.location.pathname);
     const { getTargetArticle, slug } = this.props;
     return getTargetArticle(`/articles/${slug}`);
   };
 
-  handleLIke = () => {
-    const { setLike } = this.props;
-    setLike();
-  };
-
   render() {
     const {
-      article, changePostStatus, setPostChangeStatusToNone, slug, deletePost,
+      article,
+      changePostStatus,
+      setPostChangeStatusToNone,
+      slug,
+      deletePost,
+      unFavorite,
+      fatchFavorite,
     } = this.props;
 
     if (changePostStatus === 'success') {
@@ -67,10 +69,17 @@ class Post extends React.Component {
               {article.tagList.length
                 ? article.tagList.map((tag) => <Tag color="orangered">{tag}</Tag>)
                 : null}
+              <span className="favorites-count">{article.favoritesCount}</span>
               {article.favorited ? (
-                <HeartFilled style={{ color: 'red' }} onClick={this.handleLIke} className="like" />
+                <span className="heart-container">
+                  <HeartFilled style={{ color: 'red' }} onClick={() => unFavorite(article.slug)} className="like" />
+                  <AnimatedHeart />
+                </span>
               ) : (
-                <HeartFilled onClick={this.handleLIke} className="like" />
+                <span className="heart-container">
+                  <HeartFilled onClick={() => fatchFavorite(article.slug)} className="like" />
+                  <AnimatedHeart />
+                </span>
               )}
             </div>
             {article.author.username === localStorage.getItem('user') && (
@@ -85,6 +94,12 @@ class Post extends React.Component {
                   Удолить
                 </Button>
                 {changePostStatus === 'sended' && <Spin className="margin-right" />}
+                <Button
+                  disabled={changePostStatus === 'sended'}
+                  type="primary"
+                >
+                  <Link to={`/articles/${slug}/edit`}>Изменить</Link>
+                </Button>
               </div>
             )}
           </div>
@@ -99,13 +114,18 @@ class Post extends React.Component {
 }
 
 Post.propTypes = {
-  article: PropTypes.object.isRequired,
-  changePostStatus: PropTypes.func.isRequired,
+  article: PropTypes.object,
+  changePostStatus: PropTypes.string.isRequired,
   setPostChangeStatusToNone: PropTypes.func.isRequired,
   slug: PropTypes.string.isRequired,
   deletePost: PropTypes.func.isRequired,
   getTargetArticle: PropTypes.func.isRequired,
-  setLike: PropTypes.func.isRequired,
+  unFavorite: PropTypes.func.isRequired,
+  fatchFavorite: PropTypes.func.isRequired,
+};
+
+Post.defaultProps = {
+  article: null,
 };
 
 export default connect(mapStateToProps, actionCreaters)(Post);

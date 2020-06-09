@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable react/forbid-prop-types */
 import React from 'react';
 import { Tag, Pagination, Spin } from 'antd';
@@ -8,10 +10,11 @@ import { connect } from 'react-redux';
 import shortid from 'shortid';
 import PropTypes from 'prop-types';
 import * as actions from '../actions/index';
+import AnimatedHeart from './AnimatedHeart';
 
 const mapStateToProps = (state) => ({
   articles: state.articles,
-  slug: state.slug,
+  requestStatus: state.requestStatus,
 });
 
 const actionCreators = {
@@ -19,25 +22,47 @@ const actionCreators = {
   setLike: actions.setLike,
   getArticles: actions.getArticles,
   getPageArticles: actions.getPageArticles,
+  deleteArticle: actions.deleteArticle,
+  fatchFavorite: actions.fatchFavorite,
+  unFavorite: actions.unFavorite,
+  filterByTag: actions.filterByTag,
 };
 
 class RenderPosts extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      slug: '',
+    };
+  }
+
+  handleLike = (evt) => {
+    const { target } = evt;
+    const title = target.closest('.card__content').firstChild.textContent;
+    this.setState({ slug: title });
+  }
+
   componentDidMount = () => {
-    const { getArticles } = this.props;
+    const { getArticles, deleteArticle } = this.props;
+    deleteArticle();
     getArticles();
   };
 
-  handleLIke = (evt) => {
-    const { setLike } = this.props;
-    const { target } = evt;
-    setLike(target.parentNode.parentNode.parentNode.parentNode.firstChild.textContent);
-  };
-
   render() {
-    const { articles, getPageArticles, setSlug } = this.props;
+    const { slug } = this.state;
+
+    const {
+      articles,
+      getPageArticles,
+      setSlug,
+      requestStatus,
+      fatchFavorite,
+      unFavorite,
+      filterByTag,
+    } = this.props;
     return (
       <main className="container padding-top margin-bottom">
-        {articles[0] ? (
+        {requestStatus === 'success' ? (
           articles.map((item) => (
             <div key={shortid.generate()} className="post-card">
               <img className="avatar" alt="AVATAR" src={`${item.author.image}`} />
@@ -59,15 +84,22 @@ class RenderPosts extends React.Component {
                 <div className="links">
                   {item.tagList.length
                     ? item.tagList.map((tag) => (
-                      <Tag key={shortid.generate()} color="orangered">
+                      <Tag key={shortid.generate()} color="orangered" onClick={() => filterByTag(tag)}>
                         {tag}
                       </Tag>
                     ))
                     : null}
+                  <span className="favorites-count">{item.favoritesCount}</span>
                   {item.favorited ? (
-                    <HeartFilled style={{ color: 'red' }} onClick={this.handleLIke} />
+                    <span className="heart-container" onClick={this.handleLike}>
+                      <HeartFilled style={{ color: 'red' }} onClick={() => unFavorite(item.slug)} />
+                      {item.slug === slug && <AnimatedHeart />}
+                    </span>
                   ) : (
-                    <HeartFilled onClick={this.handleLIke} />
+                    <span className="heart-container" onClick={this.handleLike}>
+                      <HeartFilled onClick={() => fatchFavorite(item.slug)} />
+                      {item.slug === slug && <AnimatedHeart />}
+                    </span>
                   )}
                 </div>
               </div>
@@ -88,10 +120,14 @@ class RenderPosts extends React.Component {
 
 RenderPosts.propTypes = {
   getArticles: PropTypes.func.isRequired,
-  setLike: PropTypes.func.isRequired,
   articles: PropTypes.array,
   getPageArticles: PropTypes.func.isRequired,
   setSlug: PropTypes.func.isRequired,
+  deleteArticle: PropTypes.func.isRequired,
+  requestStatus: PropTypes.string.isRequired,
+  fatchFavorite: PropTypes.func.isRequired,
+  unFavorite: PropTypes.func.isRequired,
+  filterByTag: PropTypes.func.isRequired,
 };
 
 RenderPosts.defaultProps = {

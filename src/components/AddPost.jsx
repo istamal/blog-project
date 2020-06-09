@@ -1,14 +1,15 @@
 import React from 'react';
-import { Formik, Form, FieldArray, Field } from 'formik';
+import {
+  Formik, Form, FieldArray, Field,
+} from 'formik';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Input, Button, Spin } from 'antd';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
-import shortid from 'shortid';
 import * as actions from '../actions/index';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   changePostStatus: state.changePostStatus,
 });
 
@@ -17,7 +18,7 @@ const actionCreators = {
   setPostChangeStatusToNone: actions.setPostChangeStatusToNone,
 };
 
-const AddPost = props => {
+const AddPost = ({ changePostStatus, setPostChangeStatusToNone, addPost }) => {
   const postValuesValidation = Yup.object().shape({
     title: Yup.string()
       .required('Обязательное поле')
@@ -29,8 +30,6 @@ const AddPost = props => {
       .required('Обязательное поле')
       .min(20, 'Не менее 20 символов'),
   });
-
-  const { changePostStatus, setPostChangeStatusToNone, addPost } = props;
 
   return changePostStatus === 'success' ? (
     <main className="container post-card padding-top">
@@ -49,10 +48,12 @@ const AddPost = props => {
         tagList: [],
       }}
       validationSchema={postValuesValidation}
-      onSubmit={values => {
+      onSubmit={(values) => {
         addPost(values);
       }}
-      render={({ values, handleChange, errors, handleBlur, touched }) => (
+      render={({
+        values, handleChange, errors, handleBlur, touched,
+      }) => (
         <Form className="form">
           <div className="margin-bottom">
             <Input
@@ -73,7 +74,7 @@ const AddPost = props => {
               onBlur={handleBlur}
             />
             {errors.description && touched.description && (
-              <div className="red s-size">{errors.description}</div>
+            <div className="red s-size">{errors.description}</div>
             )}
           </div>
           <div className="margin-bottom">
@@ -86,56 +87,54 @@ const AddPost = props => {
             />
             {errors.body && touched.body && <div className="red s-size">{errors.body}</div>}
           </div>
-          <div className="margin-bottom">
-            <FieldArray
-              placeholder="Метки"
-              name="tagList"
-              render={arrayHelpers => (
+          <FieldArray
+            placeholder="Метки"
+            name="tagList"
+            render={(arrayHelpers) => (
+              <div>
+                {values.tagList && values.tagList.length > 0 ? (
+                  values.tagList.map((tag, index) => (
+                    <div key={Math.random(100)}>
+                      <Field
+                        className="input margin-bottom m-right-gap"
+                        name={`tagList.${index}`}
+                      />
+                      <Button
+                        type="button"
+                        className="m-right-gap"
+                        danger
+                        onClick={() => arrayHelpers.remove(index)}
+                      >
+                        -
+                      </Button>
+                      <Button type="button" onClick={() => arrayHelpers.insert(index, '')}>
+                        +
+                      </Button>
+                    </div>
+                  ))
+                ) : (
+                  <Button
+                    className="margin-bottom"
+                    type="primary"
+                    onClick={() => arrayHelpers.push('')}
+                  >
+                    Добавить тег
+                  </Button>
+                )}
                 <div>
-                  {values.tagList && values.tagList.length > 0 ? (
-                    values.tagList.map((friend, index) => (
-                      <div key={shortid.generate()}>
-                        <Field
-                          className="input margin-bottom m-right-gap"
-                          name={`tagList.${index}`}
-                        />
-                        <Button
-                          type="button"
-                          className="m-right-gap"
-                          danger
-                          onClick={() => arrayHelpers.remove(index)}
-                        >
-                          -
-                        </Button>
-                        <Button type="button" onClick={() => arrayHelpers.insert(index, '')}>
-                          +
-                        </Button>
-                      </div>
-                    ))
-                  ) : (
-                    <Button
-                      className="margin-bottom"
-                      type="primary"
-                      onClick={() => arrayHelpers.push('')}
-                    >
-                      Add a friend
-                    </Button>
-                  )}
-                  <div>
-                    <Button
-                      className="margin-right"
-                      disabled={changePostStatus === 'sended'}
-                      type="primary"
-                      htmlType="submit"
-                    >
-                      Submit
-                    </Button>
-                    {changePostStatus === 'sended' && <Spin className="margin-right" />}
-                  </div>
+                  <Button
+                    className="margin-right"
+                    disabled={changePostStatus === 'sended'}
+                    type="primary"
+                    htmlType="submit"
+                  >
+                    Отправить
+                  </Button>
+                  {changePostStatus === 'sended' && <Spin className="margin-right" />}
                 </div>
-              )}
-            />
-          </div>
+              </div>
+            )}
+          />
         </Form>
       )}
     />
@@ -143,7 +142,7 @@ const AddPost = props => {
 };
 
 AddPost.propTypes = {
-  changePostStatus: PropTypes.func.isRequired,
+  changePostStatus: PropTypes.string.isRequired,
   setPostChangeStatusToNone: PropTypes.func.isRequired,
   addPost: PropTypes.func.isRequired,
 };
