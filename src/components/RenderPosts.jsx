@@ -7,7 +7,6 @@ import { HeartFilled } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { formatDistance } from 'date-fns';
 import { connect } from 'react-redux';
-import shortid from 'shortid';
 import PropTypes from 'prop-types';
 import * as actions from '../actions/index';
 import AnimatedHeart from './AnimatedHeart';
@@ -15,6 +14,7 @@ import AnimatedHeart from './AnimatedHeart';
 const mapStateToProps = (state) => ({
   articles: state.articles,
   requestStatus: state.requestStatus,
+  filteredBy: state.filteredBy,
 });
 
 const actionCreators = {
@@ -26,6 +26,7 @@ const actionCreators = {
   fatchFavorite: actions.fatchFavorite,
   unFavorite: actions.unFavorite,
   filterByTag: actions.filterByTag,
+  resetFilter: actions.resetFilter,
 };
 
 class RenderPosts extends React.Component {
@@ -38,14 +39,19 @@ class RenderPosts extends React.Component {
 
   handleLike = (evt) => {
     const { target } = evt;
-    const title = target.closest('.card__content').firstChild.textContent;
+    const title = target.closest('.card__content').getAttribute('data');
     this.setState({ slug: title });
   }
 
-  componentDidMount = () => {
-    const { getArticles, deleteArticle } = this.props;
+  handleOfGettingArticles = () => {
+    const { getArticles, deleteArticle, resetFilter } = this.props;
     deleteArticle();
     getArticles();
+    resetFilter();
+  }
+
+  componentDidMount = () => {
+    this.handleOfGettingArticles();
   };
 
   render() {
@@ -59,20 +65,35 @@ class RenderPosts extends React.Component {
       fatchFavorite,
       unFavorite,
       filterByTag,
+      filteredBy,
     } = this.props;
     return (
       <main className="container padding-top margin-bottom">
-        {requestStatus === 'success' ? (
+        <div className="nav-links margin-bottom">
+          <Link onClick={this.handleOfGettingArticles} className="nav-link" to="/">
+            Все статьи
+            {' >'}
+          </Link>
+          {filteredBy !== 'none' && (<span className="nav-link">{` ${filteredBy}`}</span>)}
+        </div>
+        {filteredBy !== 'none' && (
+        <div className="margin-bottom">
+          Все статьи с меткой
+          {' '}
+          <Tag color="orangered">{filteredBy}</Tag>
+        </div>
+        )}
+        {requestStatus === 'success' && (
           articles.map((item) => (
-            <div key={shortid.generate()} className="post-card">
+            <div key={item.slug} className="post-card">
               <img className="avatar" alt="AVATAR" src={`${item.author.image}`} />
-              <div className="card__content">
+              <div className="card__content" data={item.slug}>
                 <Link
                   onClick={() => setSlug(item.slug)}
                   to={`/articles/${item.slug}`}
                   className="title"
                 >
-                  {item.slug}
+                  {item.title}
                 </Link>
                 <div className="meta">
                   <span className="date">
@@ -84,7 +105,7 @@ class RenderPosts extends React.Component {
                 <div className="links">
                   {item.tagList.length
                     ? item.tagList.map((tag) => (
-                      <Tag key={shortid.generate()} color="orangered" onClick={() => filterByTag(tag)}>
+                      <Tag key={item.slug} color="orangered" onClick={() => filterByTag(tag)}>
                         {tag}
                       </Tag>
                     ))
@@ -105,9 +126,15 @@ class RenderPosts extends React.Component {
               </div>
             </div>
           ))
-        ) : (
+        )}
+        {requestStatus === 'requested' && (
           <div className="max-width margin-bottom">
             <Spin className="center" />
+          </div>
+        )}
+        {requestStatus === 'failure' && (
+          <div className="max-width margin-bottom">
+            <p>Возможно проблемы с интернетом перезагрузите страницу позже</p>
           </div>
         )}
         <div className="max-width">
@@ -128,6 +155,8 @@ RenderPosts.propTypes = {
   fatchFavorite: PropTypes.func.isRequired,
   unFavorite: PropTypes.func.isRequired,
   filterByTag: PropTypes.func.isRequired,
+  filteredBy: PropTypes.string.isRequired,
+  resetFilter: PropTypes.string.isRequired,
 };
 
 RenderPosts.defaultProps = {

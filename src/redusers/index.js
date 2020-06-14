@@ -82,7 +82,17 @@ const articles = (state = [], action) => {
     });
   }
   if (action.type === 'SET_FILTERED_ARTICLES') {
-    return state.filter((item) => item.tagList.includes(action.payload.tag));
+    return action.payload.articles;
+  }
+  return state;
+};
+
+const filteredBy = (state = 'none', action) => {
+  if (action.type === 'SET_FILTERED_ARTICLES') {
+    return action.payload.tag;
+  }
+  if (action.type === 'RESET_FILTER') {
+    return 'none';
   }
   return state;
 };
@@ -109,4 +119,5 @@ export default combineReducers({
   isAuth,
   slug,
   changePostStatus,
+  filteredBy,
 });

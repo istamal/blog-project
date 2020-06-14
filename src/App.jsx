@@ -44,7 +44,10 @@ class App extends React.Component {
             <Route exact path="/" component={RenderPosts} />
             <Route exact path={`/articles/${slug}`} component={Post} />
             <Route path="/signup" component={Signup} />
-            <Route path="/login" render={() => (isAuth ? <Redirect to="/" /> : <Login />)} />
+            <Route
+              path="/login"
+              render={(props) => (isAuth ? <Redirect to="/" /> : <Login />)}
+            />
             <Route
               path="/add"
               render={

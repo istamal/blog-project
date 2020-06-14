@@ -54,110 +54,122 @@ const EditPost = (props) => {
       </Link>
     </main>
   ) : (
-    <Formik
-      initialValues={{
-        title: article.title,
-        description: article.description,
-        body: article.body,
-        tagList: [...article.tagList],
-      }}
-      validationSchema={postValuesValidation}
-      onSubmit={(values) => {
-        editPost(values, slug);
-      }}
-      render={({
-        values,
-        handleChange,
-        errors,
-        handleBlur,
-        touched,
-      }) => (
-        <Form className="form">
-          <div className="margin-bottom">
-            <Input
-              placeholder="Заголовок"
-              name="title"
-              value={values.title}
-              onChange={handleChange}
-              onBlur={handleBlur}
-            />
-            {errors.title && touched.title && <div className="red s-size">{errors.title}</div>}
-          </div>
-          <div className="margin-bottom">
-            <Input
-              placeholder="Описание"
-              name="description"
-              value={values.description}
-              onChange={handleChange}
-              onBlur={handleBlur}
-            />
-            {errors.description && touched.description && (
-            <div className="red s-size">{errors.description}</div>
-            )}
-          </div>
-          <div className="margin-bottom">
-            <Input.TextArea
-              placeholder="Текст"
-              name="body"
-              value={values.body}
-              onChange={handleChange}
-              onBlur={handleBlur}
-            />
-            {errors.body && touched.body && <div className="red s-size">{errors.body}</div>}
-          </div>
-          <div className="margin-bottom">
-            <FieldArray
-              placeholder="Метки"
-              name="tagList"
-              render={(arrayHelpers) => (
-                <div>
-                  {values.tagList && values.tagList.length > 0 ? (
-                    values.tagList.map((tag, index) => (
-                      <div key={Math.random(100)}>
-                        <Field
-                          className="input margin-bottom m-right-gap"
-                          name={`tagList[${index}]`}
-                        />
-                        <Button
-                          type="button"
-                          className="m-right-gap"
-                          danger
-                          onClick={() => arrayHelpers.remove(index)}
-                        >
-                          -
-                        </Button>
-                        <Button type="button" onClick={() => arrayHelpers.insert(index, '')}>
-                          +
-                        </Button>
-                      </div>
-                    ))
-                  ) : (
-                    <Button
-                      className="margin-bottom"
-                      type="primary"
-                      onClick={() => arrayHelpers.push('')}
-                    >
-                      Add a friend
-                    </Button>
-                  )}
-                  <div>
-                    <Button
-                      className="margin-right"
-                      disabled={changePostStatus === 'sended'}
-                      type="primary"
-                      htmlType="submit"
-                    >
-                      Submit
-                    </Button>
-                    {changePostStatus === 'sended' && <Spin className="margin-right" />}
-                  </div>
-                </div>
+    <div className="container padding-top">
+      <div className="nav-links margin-bottom">
+        <Link className="nav-link" to="/">
+          Все статьи
+          {' >'}
+        </Link>
+        <Link className="nav-link" to={`/articles/${slug}/edit`}>
+          {' '}
+          Изменить статью
+        </Link>
+      </div>
+      <Formik
+        initialValues={{
+          title: article.title,
+          description: article.description,
+          body: article.body,
+          tagList: [...article.tagList],
+        }}
+        validationSchema={postValuesValidation}
+        onSubmit={(values) => {
+          editPost(values, slug);
+        }}
+        render={({
+          values,
+          handleChange,
+          errors,
+          handleBlur,
+          touched,
+        }) => (
+          <Form>
+            <div className="margin-bottom">
+              <Input
+                placeholder="Заголовок"
+                name="title"
+                value={values.title}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+              {errors.title && touched.title && <div className="red s-size">{errors.title}</div>}
+            </div>
+            <div className="margin-bottom">
+              <Input
+                placeholder="Описание"
+                name="description"
+                value={values.description}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+              {errors.description && touched.description && (
+              <div className="red s-size">{errors.description}</div>
               )}
-            />
-          </div>
-        </Form>
-      )}
-    />
+            </div>
+            <div className="margin-bottom">
+              <Input.TextArea
+                placeholder="Текст"
+                name="body"
+                value={values.body}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+              {errors.body && touched.body && <div className="red s-size">{errors.body}</div>}
+            </div>
+            <div className="margin-bottom">
+              <FieldArray
+                placeholder="Метки"
+                name="tagList"
+                render={(arrayHelpers) => (
+                  <div>
+                    {values.tagList && values.tagList.length > 0 ? (
+                      values.tagList.map((tag, index) => (
+                        <div key={index}>
+                          <Field
+                            className="input margin-bottom m-right-gap"
+                            name={`tagList[${index}]`}
+                          />
+                          <Button
+                            type="button"
+                            className="m-right-gap"
+                            danger
+                            onClick={() => arrayHelpers.remove(index)}
+                          >
+                            -
+                          </Button>
+                          <Button type="button" onClick={() => arrayHelpers.insert(index, '')}>
+                            +
+                          </Button>
+                        </div>
+                      ))
+                    ) : (
+                      <Button
+                        className="margin-bottom"
+                        type="primary"
+                        onClick={() => arrayHelpers.push('')}
+                      >
+                        Add a friend
+                      </Button>
+                    )}
+                    <div>
+                      <Button
+                        className="margin-right"
+                        disabled={changePostStatus === 'sended'}
+                        type="primary"
+                        htmlType="submit"
+                      >
+                        Submit
+                      </Button>
+                      {changePostStatus === 'sended' && <Spin className="margin-right" />}
+                    </div>
+                  </div>
+                )}
+              />
+            </div>
+          </Form>
+        )}
+      />
+    </div>
   );
 };
 

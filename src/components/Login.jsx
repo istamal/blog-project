@@ -49,41 +49,53 @@ const Login = (props) => {
   const { errorMsg, requestStatus } = props;
 
   return (
-    <form className="form" name="normal_login" onSubmit={handleSubmit}>
-      <div className="margin-bottom">
-        <Input
-          name="email"
-          placeholder="E-mail"
-          prefix={<UserOutlined className="site-form-item-icon" />}
-          value={values.email}
-          onChange={handleChange}
-          onBlur={handleBlur}
-        />
-        {errors.email && touched.email && <div className="red">{errors.email}</div>}
+    <div className="container padding-top">
+      <div className="nav-links margin-bottom">
+        <Link className="nav-link" to="/">
+          Все статьи
+          {' >'}
+        </Link>
+        <Link className="nav-link" to="/login">
+          {' '}
+          Войти
+        </Link>
       </div>
-      <div className="margin-bottom">
-        <Input.Password
-          name="password"
-          placeholder="Пароль"
-          prefix={<LockOutlined className="site-form-item-icon" />}
-          value={values.password}
-          onChange={handleChange}
-          onBlur={handleBlur}
-        />
-        {errors.password && touched.password && <div className="red">{errors.password}</div>}
-      </div>
-      {errorMsg && <div className="red">{errorMsg.emailOrPassword}</div>}
-      <Button
-        disabled={requestStatus === 'requested'}
-        htmlType="submit"
-        className="margin-right"
-        type="primary"
-      >
-        Войти
-      </Button>
-      {requestStatus === 'requested' && <Spin className="left-margin margin-right" />}
-      <Link to="/signup">Регистрация</Link>
-    </form>
+      <form name="normal_login" onSubmit={handleSubmit}>
+        <div className="margin-bottom">
+          <Input
+            name="email"
+            placeholder="E-mail"
+            prefix={<UserOutlined className="site-form-item-icon" />}
+            value={values.email}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+          {errors.email && touched.email && <div className="red">{errors.email}</div>}
+        </div>
+        <div className="margin-bottom">
+          <Input.Password
+            name="password"
+            placeholder="Пароль"
+            prefix={<LockOutlined className="site-form-item-icon" />}
+            value={values.password}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+          {errors.password && touched.password && <div className="red">{errors.password}</div>}
+        </div>
+        {errorMsg && <div className="red">{errorMsg.emailOrPassword}</div>}
+        <Button
+          disabled={requestStatus === 'requested'}
+          htmlType="submit"
+          className="margin-right"
+          type="primary"
+        >
+          Войти
+        </Button>
+        {requestStatus === 'requested' && <Spin className="left-margin margin-right" />}
+        <Link to="/signup">Регистрация</Link>
+      </form>
+    </div>
   );
 };
 

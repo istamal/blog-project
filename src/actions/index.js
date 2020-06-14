@@ -3,10 +3,11 @@ import axios from 'axios';
 axios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
+    const newConfig = config;
     if (token) {
-      config.headers.common.Authorization = `Token ${token}`;
+      newConfig.headers.common.Authorization = `Token ${token}`;
     }
-    return config;
+    return newConfig;
   },
   (error) => Promise.reject(error),
 );
@@ -59,20 +60,26 @@ export const getArticles = () => async (dispatch) => {
   }
 };
 
-export const setFilteredArticles = (tag) => ({
+export const setFilteredArticles = (articles, tag) => ({
   type: 'SET_FILTERED_ARTICLES',
   payload: {
+    articles,
     tag,
   },
+});
+
+export const resetFilter = () => ({
+  type: 'RESET_FILTER',
 });
 
 export const filterByTag = (tag) => async (dispatch) => {
   dispatch(requestSend());
   try {
     const response = await axios.get(`https://conduit.productionready.io/api/articles?limit=10&tag=${tag}`);
-    dispatch(setArticles(response.data.articles));
+    dispatch(setFilteredArticles(response.data.articles, tag));
     dispatch(requestSuccess());
   } catch (err) {
+    console.log(err);
     dispatch(requestFailure());
   }
 };
@@ -188,11 +195,15 @@ export const addPost = (values) => async (dispatch) => {
 };
 
 export const editPost = (values, slug) => async (dispatch) => {
+  const newValues = values;
+  if (!newValues.tagList.length > 0) {
+    newValues.tagList = [''];
+  }
   dispatch(postChangeRequest());
   try {
     const options = {
       method: 'Put',
-      data: { article: values },
+      data: { article: newValues },
       url: `https://conduit.productionready.io/api/articles/${slug}`,
     };
     axios(options).then((response) => {

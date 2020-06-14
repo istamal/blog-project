@@ -54,6 +54,16 @@ class Post extends React.Component {
     }
     return article ? (
       <main className="padding-top">
+        <div className="nav-links container margin-bottom">
+          <Link className="nav-link" to="/">
+            Все статьи
+            {' >'}
+          </Link>
+          <Link className="nav-link" to={`/articles/${article.slug}`}>
+            {' '}
+            Страница поста
+          </Link>
+        </div>
         <div className="post-card container">
           <img className="avatar" alt="AVATAR" src={`${article.author.image}`} />
           <div className="card__content">

@@ -29,45 +29,57 @@ const Signup = ({ errorMsg, requestStatus, addUser }) => {
   const { values, handleChange, handleSubmit } = formik;
 
   const renderForm = () => (
-    <form className="form" onSubmit={handleSubmit}>
-      <div className="margin-bottom">
-        <Input
-          name="email"
-          placeholder="E-mail"
-          label="E-mail"
-          type="email"
-          value={values.email}
-          onChange={handleChange}
-        />
-        {errorMsg && <div className="red">{errorMsg.email}</div>}
+    <div className="container padding-top">
+      <div className="nav-links margin-bottom">
+        <Link className="nav-link" to="/">
+          Все статьи
+          {' >'}
+        </Link>
+        <Link className="nav-link" to="/signup">
+          {' '}
+          Регистрация
+        </Link>
       </div>
-      <div className="margin-bottom">
-        <Input.Password
-          name="password"
-          placeholder="Пароль"
-          label="Password"
-          type="password"
-          value={values.password}
-          onChange={handleChange}
-        />
-        {errorMsg && <div className="red">{errorMsg.password}</div>}
-      </div>
-      <div className="margin-bottom">
-        <Input
-          placeholder="Имя Пользователя"
-          name="username"
-          label="Nickname"
-          value={values.username}
-          onChange={handleChange}
-        />
-        {errorMsg && <div className="red">{errorMsg.username}</div>}
-      </div>
-      <Button className="left-margin" type="primary" htmlType="submit">
-        Register
-      </Button>
-      {requestStatus === 'requested' && <Spin className="left-margin" />}
-      <Link to="/login">Войти</Link>
-    </form>
+      <form onSubmit={handleSubmit}>
+        <div className="margin-bottom">
+          <Input
+            name="email"
+            placeholder="E-mail"
+            label="E-mail"
+            type="email"
+            value={values.email}
+            onChange={handleChange}
+          />
+          {errorMsg && <div className="red">{errorMsg.email}</div>}
+        </div>
+        <div className="margin-bottom">
+          <Input.Password
+            name="password"
+            placeholder="Пароль"
+            label="Password"
+            type="password"
+            value={values.password}
+            onChange={handleChange}
+          />
+          {errorMsg && <div className="red">{errorMsg.password}</div>}
+        </div>
+        <div className="margin-bottom">
+          <Input
+            placeholder="Имя Пользователя"
+            name="username"
+            label="Nickname"
+            value={values.username}
+            onChange={handleChange}
+          />
+          {errorMsg && <div className="red">{errorMsg.username}</div>}
+        </div>
+        <Button className="margin-right" type="primary" htmlType="submit">
+          Register
+        </Button>
+        {requestStatus === 'requested' && <Spin className="left-margin" />}
+        <Link to="/login">Войти</Link>
+      </form>
+    </div>
   );
 
   return renderForm();
