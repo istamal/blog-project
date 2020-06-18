@@ -31,10 +31,10 @@ export const requestFailure = () => ({
   type: 'REQUEST_FAILURE',
 });
 
-export const setArticles = (articles) => ({
+export const setArticles = (data) => ({
   type: 'SET_ARTICLES',
   payload: {
-    articles,
+    data,
   },
 });
 
@@ -53,17 +53,17 @@ export const getArticles = () => async (dispatch) => {
   dispatch(requestSend());
   try {
     const response = await axios.get('https://conduit.productionready.io/api/articles?limit=10');
-    dispatch(setArticles(response.data.articles));
+    dispatch(setArticles(response.data));
     dispatch(requestSuccess());
   } catch (err) {
     dispatch(requestFailure());
   }
 };
 
-export const setFilteredArticles = (articles, tag) => ({
+export const setFilteredArticles = (data, tag) => ({
   type: 'SET_FILTERED_ARTICLES',
   payload: {
-    articles,
+    data,
     tag,
   },
 });
@@ -76,20 +76,12 @@ export const filterByTag = (tag) => async (dispatch) => {
   dispatch(requestSend());
   try {
     const response = await axios.get(`https://conduit.productionready.io/api/articles?limit=10&tag=${tag}`);
-    dispatch(setFilteredArticles(response.data.articles, tag));
+    dispatch(setFilteredArticles(response.data, tag));
     dispatch(requestSuccess());
   } catch (err) {
-    console.log(err);
     dispatch(requestFailure());
   }
 };
-
-export const setLike = (liked) => ({
-  type: 'SET_LIKE',
-  payload: {
-    liked,
-  },
-});
 
 export const addErrorMsg = (err) => ({
   type: 'ADD_ERROR_MESSAGE',
@@ -105,7 +97,7 @@ export const getPageArticles = (page) => async (dispatch) => {
     const response = await axios.get(
       `https://conduit.productionready.io/api/articles?limit=10&offset=${offsetVal}`,
     );
-    dispatch(setArticles(response.data.articles));
+    dispatch(setArticles(response.data));
     dispatch(requestSuccess());
   } catch (err) {
     dispatch(requestFailure());
@@ -129,35 +121,6 @@ export const setAuth = (auth) => ({
     auth,
   },
 });
-
-export const authenticateWithToken = () => async (dispatch) => {
-  dispatch(requestSend());
-  try {
-    const response = await axios.get('https://conduit.productionready.io/api/user');
-    localStorage.setItem('token', response.data.user.token);
-    dispatch(requestSuccess());
-    dispatch(setAuth(false));
-  } catch (error) {
-    localStorage.clear();
-    dispatch(setAuth(true));
-    dispatch(requestFailure());
-    throw error;
-  }
-};
-
-export const authenticate = (values, path) => async (dispatch) => {
-  dispatch(requestSend());
-  try {
-    const response = await axios.post(path, { user: values });
-    localStorage.setItem('user', response.data.user.username);
-    localStorage.setItem('token', response.data.user.token);
-    dispatch(requestSuccess());
-    await dispatch(setAuth(false));
-  } catch (error) {
-    dispatch(requestFailure());
-    dispatch(addErrorMsg(error.response.data.errors));
-  }
-};
 
 export const postChangeRequest = () => ({
   type: 'POST_CHANGE_REQUESTED',
@@ -235,10 +198,10 @@ export const deletePost = (slug) => async (dispatch) => {
   }
 };
 
-export const addUserName = (username) => ({
-  type: 'ADD_USERNAME',
+export const addUserData = (user) => ({
+  type: 'ADD_USERDATA',
   payload: {
-    name: username,
+    user,
   },
 });
 
@@ -246,13 +209,44 @@ export const addUser = (values, path) => async (dispatch) => {
   dispatch(requestSend());
   try {
     const response = await axios.post(path, { user: values });
-    dispatch(addUserName(response.data.user.username));
+    dispatch(addUserData(response.data));
     localStorage.setItem('user', response.data.user.username);
     dispatch(requestSuccess());
     dispatch(setAuth());
   } catch (error) {
     dispatch(addErrorMsg(error.response.data.errors));
     dispatch(requestFailure());
+  }
+};
+
+export const authenticate = (values, path) => async (dispatch) => {
+  dispatch(requestSend());
+  try {
+    const response = await axios.post(path, { user: values });
+    dispatch(addUserData(response.data.user));
+    localStorage.setItem('user', response.data.user.username);
+    localStorage.setItem('token', response.data.user.token);
+    dispatch(requestSuccess());
+    await dispatch(setAuth(false));
+  } catch (error) {
+    dispatch(requestFailure());
+    dispatch(addErrorMsg(error.response.data.errors));
+  }
+};
+
+export const authenticateWithToken = () => async (dispatch) => {
+  dispatch(requestSend());
+  try {
+    const response = await axios.get('https://conduit.productionready.io/api/user');
+    localStorage.setItem('token', response.data.user.token);
+    dispatch(requestSuccess());
+    dispatch(addUserData(response.data.user));
+    dispatch(setAuth(false));
+  } catch (error) {
+    localStorage.clear();
+    dispatch(setAuth(true));
+    dispatch(requestFailure());
+    throw error;
   }
 };
 
@@ -289,7 +283,6 @@ export const fatchFavorite = (slug) => async (dispatch) => {
     dispatch(setFavorited(response.data.article));
     dispatch(favoriteSuccess());
   } catch (err) {
-    console.log(err);
     dispatch(favoriteFailure());
   }
 };
@@ -301,7 +294,6 @@ export const unFavorite = (slug) => async (dispatch) => {
     dispatch(deleteFavorited(response.data.article));
     dispatch(favoriteSuccess());
   } catch (err) {
-    console.log(err);
     dispatch(favoriteFailure());
   }
 };

@@ -3,6 +3,7 @@ import { useFormik } from 'formik';
 import { Link } from 'react-router-dom';
 import { Input, Button, Spin } from 'antd';
 import { connect } from 'react-redux';
+import * as Yup from 'yup';
 import * as actions from '../actions/index';
 
 const actionCreators = {
@@ -15,18 +16,34 @@ const mapStateToProps = (state) => ({
 });
 
 const Signup = ({ errorMsg, requestStatus, addUser }) => {
+  const singupValidation = Yup.object().shape({
+    email: Yup.string()
+      .email('Укожите корректный email')
+      .required('Обязательное поле'),
+    password: Yup.string()
+      .required('Вы не ввели пароль')
+      .min(8, 'Должно быть не менее 8 символов')
+      .matches(/(?=.*[0-9])/, 'Пароль должень содержать хотя бы одну цифру')
+      .matches(/(?=.*[a-z])/, 'Пароль должень содержать хотя бы одну букву латинского алфавита'),
+    username: Yup.string()
+      .required('Вы не ввели имя пользователя'),
+  });
+
   const formik = useFormik({
     initialValues: {
       username: '',
       email: '',
       password: '',
     },
+    validationSchema: singupValidation,
     onSubmit: (values) => {
       addUser(values, 'https://conduit.productionready.io/api/users');
     },
   });
 
-  const { values, handleChange, handleSubmit } = formik;
+  const {
+    values, errors, touched, handleChange, handleSubmit, handleBlur,
+  } = formik;
 
   const renderForm = () => (
     <div className="container padding-top">
@@ -49,8 +66,10 @@ const Signup = ({ errorMsg, requestStatus, addUser }) => {
             type="email"
             value={values.email}
             onChange={handleChange}
+            onBlur={handleBlur}
           />
           {errorMsg && <div className="red">{errorMsg.email}</div>}
+          {errors.email && touched.email && <div className="red">{errors.email}</div>}
         </div>
         <div className="margin-bottom">
           <Input.Password
@@ -60,8 +79,10 @@ const Signup = ({ errorMsg, requestStatus, addUser }) => {
             type="password"
             value={values.password}
             onChange={handleChange}
+            onBlur={handleBlur}
           />
           {errorMsg && <div className="red">{errorMsg.password}</div>}
+          {errors.password && touched.password && <div className="red">{errors.password}</div>}
         </div>
         <div className="margin-bottom">
           <Input
@@ -70,8 +91,10 @@ const Signup = ({ errorMsg, requestStatus, addUser }) => {
             label="Nickname"
             value={values.username}
             onChange={handleChange}
+            onBlur={handleBlur}
           />
           {errorMsg && <div className="red">{errorMsg.username}</div>}
+          {errors.username && touched.username && <div className="red">{errors.username}</div>}
         </div>
         <Button className="margin-right" type="primary" htmlType="submit">
           Register

@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 import React from 'react';
 import { Avatar } from 'antd';
 import { Link } from 'react-router-dom';
@@ -8,13 +9,14 @@ import * as actions from '../actions/index';
 
 const mapStateToProps = (state) => ({
   isAuth: state.isAuth,
+  user: state.user,
 });
 
 const actionCreators = {
   setAuth: actions.setAuth,
 };
 
-const Header = ({ setAuth, isAuth }) => {
+const Header = ({ setAuth, isAuth, user }) => {
   const handleAuth = () => {
     setAuth(isAuth);
     localStorage.clear();
@@ -35,7 +37,7 @@ const Header = ({ setAuth, isAuth }) => {
           <div className="user-name">
             <Avatar icon={<UserOutlined />} />
             {isAuth ? (
-              <span className="user-nick">{localStorage.getItem('user')}</span>
+              <span className="user-nick">{user.username}</span>
             ) : (
               <span className="user-nick">Вы не авторизованы</span>
             )}
@@ -58,6 +60,11 @@ const Header = ({ setAuth, isAuth }) => {
 Header.propTypes = {
   setAuth: PropTypes.func.isRequired,
   isAuth: PropTypes.bool.isRequired,
+  user: PropTypes.object,
+};
+
+Header.defaultProps = {
+  user: null,
 };
 
 export default connect(mapStateToProps, actionCreators)(Header);

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable react/forbid-prop-types */
 import React from 'react';
 import {
@@ -148,7 +149,7 @@ const EditPost = (props) => {
                         type="primary"
                         onClick={() => arrayHelpers.push('')}
                       >
-                        Add a friend
+                        Добавить тег
                       </Button>
                     )}
                     <div>
@@ -158,7 +159,7 @@ const EditPost = (props) => {
                         type="primary"
                         htmlType="submit"
                       >
-                        Submit
+                        Сочранить
                       </Button>
                       {changePostStatus === 'sended' && <Spin className="margin-right" />}
                     </div>

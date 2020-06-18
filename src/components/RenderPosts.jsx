@@ -7,6 +7,7 @@ import { HeartFilled } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { formatDistance } from 'date-fns';
 import { connect } from 'react-redux';
+import { uniqueId } from 'lodash';
 import PropTypes from 'prop-types';
 import * as actions from '../actions/index';
 import AnimatedHeart from './AnimatedHeart';
@@ -19,7 +20,6 @@ const mapStateToProps = (state) => ({
 
 const actionCreators = {
   setSlug: actions.setSlug,
-  setLike: actions.setLike,
   getArticles: actions.getArticles,
   getPageArticles: actions.getPageArticles,
   deleteArticle: actions.deleteArticle,
@@ -84,9 +84,9 @@ class RenderPosts extends React.Component {
         </div>
         )}
         {requestStatus === 'success' && (
-          articles.map((item) => (
-            <div key={item.slug} className="post-card">
-              <img className="avatar" alt="AVATAR" src={`${item.author.image}`} />
+          articles.articles.map((item) => (
+            <div key={uniqueId()} className="post-card">
+              <img className="avatar" alt="AVATAR" src={item.author.image} />
               <div className="card__content" data={item.slug}>
                 <Link
                   onClick={() => setSlug(item.slug)}
@@ -105,7 +105,7 @@ class RenderPosts extends React.Component {
                 <div className="links">
                   {item.tagList.length
                     ? item.tagList.map((tag) => (
-                      <Tag key={item.slug} color="orangered" onClick={() => filterByTag(tag)}>
+                      <Tag key={uniqueId()} color="orangered" onClick={() => filterByTag(tag)}>
                         {tag}
                       </Tag>
                     ))
@@ -138,7 +138,7 @@ class RenderPosts extends React.Component {
           </div>
         )}
         <div className="max-width">
-          <Pagination onChange={getPageArticles} defaultCurrent="1" total="500" />
+          <Pagination onChange={getPageArticles} defaultCurrent="1" total={articles.totalCount} />
         </div>
       </main>
     );
@@ -147,7 +147,7 @@ class RenderPosts extends React.Component {
 
 RenderPosts.propTypes = {
   getArticles: PropTypes.func.isRequired,
-  articles: PropTypes.array,
+  articles: PropTypes.object,
   getPageArticles: PropTypes.func.isRequired,
   setSlug: PropTypes.func.isRequired,
   deleteArticle: PropTypes.func.isRequired,
@@ -156,11 +156,11 @@ RenderPosts.propTypes = {
   unFavorite: PropTypes.func.isRequired,
   filterByTag: PropTypes.func.isRequired,
   filteredBy: PropTypes.string.isRequired,
-  resetFilter: PropTypes.string.isRequired,
+  resetFilter: PropTypes.func.isRequired,
 };
 
 RenderPosts.defaultProps = {
-  articles: null,
+  articles: {},
 };
 
 export default connect(mapStateToProps, actionCreators)(RenderPosts);

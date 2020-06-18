@@ -69,20 +69,37 @@ const favoriteRequestsStatus = (state = 'none', action) => {
   return state;
 };
 
-const articles = (state = [], action) => {
+const articles = (state = {}, action) => {
   if (action.type === 'SET_ARTICLES') {
-    return action.payload.articles;
+    return {
+      articles: action.payload.data.articles,
+      totalCount: action.payload.data.articlesCount,
+    };
   }
   if (action.type === 'SET_FAVORITED' || action.type === 'DELETE_FAVORITED') {
-    return state.map((item) => {
+    const newArticles = state.articles.map((item) => {
       if (item.slug === action.payload.article.slug) {
         return action.payload.article;
       }
       return item;
     });
+    return {
+      articles: newArticles,
+      totalCount: state.totalCount,
+    };
   }
   if (action.type === 'SET_FILTERED_ARTICLES') {
-    return action.payload.articles;
+    return {
+      articles: action.payload.data.articles,
+      totalCount: action.payload.data.articlesCount,
+    };
+  }
+  return state;
+};
+
+const user = (state = {}, action) => {
+  if (action.type === 'ADD_USERDATA') {
+    return { ...action.payload.user };
   }
   return state;
 };
@@ -120,4 +137,5 @@ export default combineReducers({
   slug,
   changePostStatus,
   filteredBy,
+  user,
 });

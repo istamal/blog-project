@@ -22,12 +22,18 @@ const mapStateToProps = (state) => ({
   slug: state.slug,
   changePostStatus: state.changePostStatus,
   requestStatus: state.requestStatus,
+  user: state.user,
 });
 
 class Post extends React.Component {
+  constructor(props) {
+    super(props);
+    this.id = 0;
+  }
+
   componentDidMount = () => {
     const { getTargetArticle, slug } = this.props;
-    return getTargetArticle(`/articles/${slug}`);
+    getTargetArticle(`/articles/${slug}`);
   };
 
   render() {
@@ -39,6 +45,7 @@ class Post extends React.Component {
       deletePost,
       unFavorite,
       fatchFavorite,
+      user,
     } = this.props;
 
     if (changePostStatus === 'success') {
@@ -65,7 +72,7 @@ class Post extends React.Component {
           </Link>
         </div>
         <div className="post-card container">
-          <img className="avatar" alt="AVATAR" src={`${article.author.image}`} />
+          <img className="avatar" alt="AVATAR" src={article.author.image} />
           <div className="card__content">
             <h1 className="title">{article.title}</h1>
             <div className="meta">
@@ -77,7 +84,10 @@ class Post extends React.Component {
             <p>{article.body}</p>
             <div className="links">
               {article.tagList.length
-                ? article.tagList.map((tag) => <Tag color="orangered">{tag}</Tag>)
+                ? article.tagList.map((tag) => {
+                  this.id += 1;
+                  return <Tag key={this.id} color="orangered">{tag}</Tag>;
+                })
                 : null}
               <span className="favorites-count">{article.favoritesCount}</span>
               {article.favorited ? (
@@ -92,7 +102,7 @@ class Post extends React.Component {
                 </span>
               )}
             </div>
-            {article.author.username === localStorage.getItem('user') && (
+            {article.author.username === user.username && (
               <div className="remove">
                 <Button
                   className="margin-right"
@@ -132,10 +142,12 @@ Post.propTypes = {
   getTargetArticle: PropTypes.func.isRequired,
   unFavorite: PropTypes.func.isRequired,
   fatchFavorite: PropTypes.func.isRequired,
+  user: PropTypes.object,
 };
 
 Post.defaultProps = {
   article: null,
+  user: null,
 };
 
 export default connect(mapStateToProps, actionCreaters)(Post);
