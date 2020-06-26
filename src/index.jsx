@@ -9,13 +9,12 @@ import * as serviceWorker from './serviceWorker';
 import rootReducer from './redusers/index';
 
 // eslint-disable-next-line no-underscore-dangle
-const devTools = window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__();
+// const devTools = window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__();
 
 const store = createStore(
   rootReducer,
   compose(
     applyMiddleware(thunk),
-    devTools,
   ),
 );
 

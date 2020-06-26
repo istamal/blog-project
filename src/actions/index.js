@@ -235,17 +235,14 @@ export const authenticate = (values, path) => async (dispatch) => {
 };
 
 export const authenticateWithToken = () => async (dispatch) => {
-  dispatch(requestSend());
   try {
     const response = await axios.get('https://conduit.productionready.io/api/user');
     localStorage.setItem('token', response.data.user.token);
-    dispatch(requestSuccess());
     dispatch(addUserData(response.data.user));
     dispatch(setAuth(false));
   } catch (error) {
     localStorage.clear();
     dispatch(setAuth(true));
-    dispatch(requestFailure());
     throw error;
   }
 };
