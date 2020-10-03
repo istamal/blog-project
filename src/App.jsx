@@ -2,9 +2,7 @@ import React from 'react';
 import './App.scss';
 import 'antd/dist/antd.css';
 import { connect } from 'react-redux';
-import {
-  BrowserRouter as Router, Route, Switch, Redirect,
-} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 import RenderPosts from './components/RenderPosts';
@@ -17,7 +15,7 @@ import AddPost from './components/AddPost';
 import * as actions from './actions/index';
 import EditPost from './components/EditPost';
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   isAuth: state.isAuth,
   slug: state.slug,
 });
@@ -32,7 +30,7 @@ class App extends React.Component {
     if (localStorage.getItem('token')) {
       authenticateWithToken();
     }
-  }
+  };
 
   render() {
     const { slug, isAuth } = this.props;
@@ -44,20 +42,8 @@ class App extends React.Component {
             <Route exact path="/" component={RenderPosts} />
             <Route exact path={`/articles/${slug}`} component={Post} />
             <Route path="/signup" component={Signup} />
-            <Route
-              path="/login"
-              render={(props) => (isAuth ? <Redirect to="/" /> : <Login />)}
-            />
-            <Route
-              path="/add"
-              render={
-                () => (
-                  isAuth
-                    ? <AddPost />
-                    : <Redirect to="/Login" />
-                )
-              }
-            />
+            <Route path="/login" render={() => (isAuth ? <Redirect to="/" /> : <Login />)} />
+            <Route path="/add" render={() => (isAuth ? <AddPost /> : <Redirect to="/Login" />)} />
             <Route path={`/articles/${slug}/edit`} component={EditPost} />
           </Switch>
           <Footer />

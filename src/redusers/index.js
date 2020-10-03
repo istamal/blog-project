@@ -77,7 +77,7 @@ const articles = (state = {}, action) => {
     };
   }
   if (action.type === 'SET_FAVORITED' || action.type === 'DELETE_FAVORITED') {
-    const newArticles = state.articles.map((item) => {
+    const newArticles = state.articles.map(item => {
       if (item.slug === action.payload.article.slug) {
         return action.payload.article;
       }
@@ -104,12 +104,12 @@ const user = (state = {}, action) => {
   return state;
 };
 
-const filteredBy = (state = 'none', action) => {
+const filteredBy = (state = null, action) => {
   if (action.type === 'SET_FILTERED_ARTICLES') {
     return action.payload.tag;
   }
   if (action.type === 'RESET_FILTER') {
-    return 'none';
+    return null;
   }
   return state;
 };

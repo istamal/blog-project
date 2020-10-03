@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { formatDistance } from 'date-fns';
 import { HeartFilled } from '@ant-design/icons';
-import { Tag, Spin, Button } from 'antd';
+import { Tag, Spin, Button, Skeleton } from 'antd';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import * as actions from '../actions/index';
@@ -17,7 +17,7 @@ const actionCreaters = {
   setPostChangeStatusToNone: actions.setPostChangeStatusToNone,
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   article: state.article,
   slug: state.slug,
   changePostStatus: state.changePostStatus,
@@ -84,15 +84,23 @@ class Post extends React.Component {
             <p>{article.body}</p>
             <div className="links">
               {article.tagList.length
-                ? article.tagList.map((tag) => {
-                  this.id += 1;
-                  return <Tag key={this.id} color="orangered">{tag}</Tag>;
-                })
+                ? article.tagList.map(tag => {
+                    this.id += 1;
+                    return (
+                      <Tag key={this.id} color="orangered">
+                        {tag}
+                      </Tag>
+                    );
+                  })
                 : null}
               <span className="favorites-count">{article.favoritesCount}</span>
               {article.favorited ? (
                 <span className="heart-container">
-                  <HeartFilled style={{ color: 'red' }} onClick={() => unFavorite(article.slug)} className="like" />
+                  <HeartFilled
+                    style={{ color: 'red' }}
+                    onClick={() => unFavorite(article.slug)}
+                    className="like"
+                  />
                   <AnimatedHeart />
                 </span>
               ) : (
@@ -114,10 +122,7 @@ class Post extends React.Component {
                   Удолить
                 </Button>
                 {changePostStatus === 'sended' && <Spin className="margin-right" />}
-                <Button
-                  disabled={changePostStatus === 'sended'}
-                  type="primary"
-                >
+                <Button disabled={changePostStatus === 'sended'} type="primary">
                   <Link to={`/articles/${slug}/edit`}>Изменить</Link>
                 </Button>
               </div>
@@ -126,8 +131,8 @@ class Post extends React.Component {
         </div>
       </main>
     ) : (
-      <div className="padding-top max-width margin-bottom">
-        <Spin className="center" />
+      <div className="padding-top container max-width margin-bottom">
+        <Skeleton active avatar />
       </div>
     );
   }

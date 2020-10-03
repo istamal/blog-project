@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable react/forbid-prop-types */
 import React from 'react';
-import { Tag, Pagination, Spin } from 'antd';
+import { Tag, Pagination, Skeleton } from 'antd';
 import { HeartFilled } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { formatDistance } from 'date-fns';
@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 import * as actions from '../actions/index';
 import AnimatedHeart from './AnimatedHeart';
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   articles: state.articles,
   requestStatus: state.requestStatus,
   filteredBy: state.filteredBy,
@@ -37,18 +37,18 @@ class RenderPosts extends React.Component {
     };
   }
 
-  handleLike = (evt) => {
+  handleLike = evt => {
     const { target } = evt;
     const title = target.closest('.card__content').getAttribute('data');
     this.setState({ slug: title });
-  }
+  };
 
   handleOfGettingArticles = () => {
     const { getArticles, deleteArticle, resetFilter } = this.props;
     deleteArticle();
     getArticles();
     resetFilter();
-  }
+  };
 
   componentDidMount = () => {
     this.handleOfGettingArticles();
@@ -74,17 +74,15 @@ class RenderPosts extends React.Component {
             Все статьи
             {' >'}
           </Link>
-          {filteredBy !== 'none' && (<span className="nav-link">{` ${filteredBy}`}</span>)}
+          {filteredBy && <span className="nav-link">{` ${filteredBy}`}</span>}
         </div>
-        {filteredBy !== 'none' && (
-        <div className="margin-bottom">
-          Все статьи с меткой
-          {' '}
-          <Tag color="orangered">{filteredBy}</Tag>
-        </div>
+        {filteredBy && (
+          <div className="margin-bottom">
+            Все статьи с меткой <Tag color="orangered">{filteredBy}</Tag>
+          </div>
         )}
-        {requestStatus === 'success' && (
-          articles.articles.map((item) => (
+        {requestStatus === 'success' &&
+          articles.articles.map(item => (
             <div key={uniqueId()} className="post-card">
               <img className="avatar" alt="AVATAR" src={item.author.image} />
               <div className="card__content" data={item.slug}>
@@ -104,11 +102,11 @@ class RenderPosts extends React.Component {
                 <p>{item.body}</p>
                 <div className="links">
                   {item.tagList.length
-                    ? item.tagList.map((tag) => (
-                      <Tag key={uniqueId()} color="orangered" onClick={() => filterByTag(tag)}>
-                        {tag}
-                      </Tag>
-                    ))
+                    ? item.tagList.map(tag => (
+                        <Tag key={uniqueId()} color="orangered" onClick={() => filterByTag(tag)}>
+                          {tag}
+                        </Tag>
+                      ))
                     : null}
                   <span className="favorites-count">{item.favoritesCount}</span>
                   {item.favorited ? (
@@ -125,12 +123,30 @@ class RenderPosts extends React.Component {
                 </div>
               </div>
             </div>
-          ))
-        )}
+          ))}
         {requestStatus === 'requested' && (
-          <div className="max-width margin-bottom">
-            <Spin className="center" />
-          </div>
+          <>
+            <Skeleton active avatar />
+            <Skeleton active avatar />
+            <Skeleton active avatar />
+            <Skeleton active avatar />
+            <Skeleton active avatar />
+            <Skeleton active avatar />
+            <Skeleton active avatar />
+            <Skeleton active avatar />
+            <Skeleton active avatar />
+            <Skeleton active avatar />
+            <Skeleton active avatar />
+            <Skeleton active avatar />
+            <Skeleton active avatar />
+            <Skeleton active avatar />
+            <Skeleton active avatar />
+            <Skeleton active avatar />
+            <Skeleton active avatar />
+            <Skeleton active avatar />
+            <Skeleton active avatar />
+            <Skeleton active avatar />
+          </>
         )}
         {requestStatus === 'failure' && (
           <div className="max-width margin-bottom">
